@@ -1,0 +1,24 @@
+---
+abstract: 'Read individual characters from the keyboard using Win32::Console'
+author:
+  - unknown
+build_requires: {}
+configure_requires:
+  Module::Build: 0
+dynamic_config: 1
+generated_by: 'Module::Build version 0.3901, CPAN::Meta::Converter version 2.120630'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Win32-Readch
+provides:
+  Win32::Readch:
+    file: lib/Win32/Readch.pm
+    version: 0.01
+requires:
+  Win32::Console: 0
+  Win32::IPC: 0
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.01

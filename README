@@ -1,0 +1,59 @@
+Win32-Readch Version 0.01
+
+Read individual characters from the keyboard using Win32::Console
+
+SYNOPSIS
+
+  use Win32::Readch qw(readch_block getstr_noecho);
+
+  local $| = 1;
+
+  print 'Press a single keystroke: ';
+  my $ch1 = readch_block;
+  print "Character '$ch1' has been pressed\n\n";
+
+  my $password = getstr_noecho('Please enter a password: ');
+  print "Your password is '$password'\n";
+
+INSTALLATION
+
+    To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+SUPPORT AND DOCUMENTATION
+
+    After installing, you can find documentation for this module with the
+    perldoc command.
+
+    perldoc Win32::Readch
+
+You can also look for information at:
+
+    RT, CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Win32-Readch
+
+    AnnoCPAN, Annotated CPAN documentation
+        http://annocpan.org/dist/Win32-Readch
+
+    CPAN Ratings
+        http://cpanratings.perl.org/d/Win32-Readch
+
+    Search CPAN
+        http://search.cpan.org/dist/Win32-Readch/
+
+
+AUTHOR
+
+    Klaus Eichner <klaus03@gmail.com>
+
+COPYRIGHT AND LICENSE
+
+    Copyright (C) 2009-2011 by Klaus Eichner
+
+    All rights reserved. This program is free software; you can redistribute
+    it and/or modify it under the terms of the artistic license 2.0,
+    see http://www.opensource.org/licenses/artistic-license-2.0.php

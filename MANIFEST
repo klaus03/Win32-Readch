@@ -1,0 +1,10 @@
+Changes
+MANIFEST
+LICENCE
+Makefile.PL
+Build.PL
+README
+lib/Win32/Readch.pm
+t/0010_test.t
+META.yml
+META.json

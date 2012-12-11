@@ -1,0 +1,6 @@
+Build
+MYMETA.*
+Makefile
+_build/
+blib/
+*.swp
