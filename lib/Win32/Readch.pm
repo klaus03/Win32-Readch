@@ -10,7 +10,7 @@ require Exporter;
 our @ISA       = qw(Exporter);
 our @EXPORT    = qw();
 our @EXPORT_OK = qw(readch_block readch_noblock getstr_noecho);
-our $VERSION   = '0.01';
+our $VERSION   = '0.02';
 
 my $CONS_INP = Win32::Console->new(STD_INPUT_HANDLE)
   or die "Error in Win32::Readch - Can't Win32::Console->new(STD_INPUT_HANDLE)";
@@ -30,11 +30,11 @@ sub readch_noblock {
         }
     }
 
-    return (@Ch_Stack ? shift @Ch_Stack : undef);
+    shift @Ch_Stack;
 }
 
 sub readch_block {
-    my $ch;
+    my $ch = readch_noblock;
 
     # the wait_any() command waits for key-down as well as for key-up events...
     # That means that for every keystroke we get two events: one for key-down and one for key-up.

@@ -1,4 +1,4 @@
-Win32-Readch Version 0.01
+Win32-Readch Version 0.02
 
 Read individual characters from the keyboard using Win32::Console
 

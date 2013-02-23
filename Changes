@@ -2,3 +2,9 @@ Revision history for Win32-Readch
 
 0.01    11 Dec 2012
         First version, released on an unsuspecting world.
+
+0.02    23 Feb 2013
+        Fix an obvious bug in sub readch_block where the initial call to readch_noblock
+        was missing. The effect of this bug was that while normal keyboard input was processed
+        correctly, a copy/paste action only processed the first character. This bug is now fixed
+        with version 0.02

@@ -15,10 +15,10 @@ name: Win32-Readch
 provides:
   Win32::Readch:
     file: lib/Win32/Readch.pm
-    version: 0.01
+    version: 0.02
 requires:
   Win32::Console: 0
   Win32::IPC: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+version: 0.02
