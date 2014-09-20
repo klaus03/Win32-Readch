@@ -1,10 +1,32 @@
-Revision history for Win32-Readch
+Revision history for Win32::Readch
 
-0.01    11 Dec 2012
-        First version, released on an unsuspecting world.
+0.03 - 2014-09-20T19:29:17+01:00
 
-0.02    23 Feb 2013
-        Fix an obvious bug in sub readch_block where the initial call to readch_noblock
-        was missing. The effect of this bug was that while normal keyboard input was processed
-        correctly, a copy/paste action only processed the first character. This bug is now fixed
-        with version 0.02
+  [DOCUMENTATION]
+
+  - Add a .gitignore file
+
+  - Changelog dates are better written as YYYY.MM.DD and probably ordered in
+    the other, descending, direction
+    Remark: I have decided to follow the ISO 8601 standard at
+    http://www.w3.org/TR/NOTE-datetime
+
+  - Just use a Makefile.PL and not a Build.PL the latter does not have any
+    added value any more
+  - In Makefile.PL ==> meta files link to repository
+
+0.02 - 2013-02-23T12:00:00+01:00
+
+  [BUG FIX]
+
+  - Fix an obvious bug in sub readch_block where the initial call to readch_noblock
+    was missing. The effect of this bug was that while normal keyboard input was processed
+    correctly, a copy/paste action only processed the first character. This bug is now fixed
+    with version 0.02
+
+0.01 - 2012-12-11T12:00:00+01:00
+
+  [ENHANCEMENTS]
+
+  - First version, released on an unsuspecting world.
+

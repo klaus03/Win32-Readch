@@ -1,22 +1,33 @@
 {
    "abstract" : "Read individual characters from the keyboard using Win32::Console",
    "author" : [
-      "unknown"
+      "Klaus Eichner <klaus03@gmail.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.3901, CPAN::Meta::Converter version 2.120630",
+   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.141170",
    "license" : [
-      "perl_5"
+      "unknown"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
    },
    "name" : "Win32-Readch",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ]
+   },
    "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0"
+            "ExtUtils::MakeMaker" : "0"
          }
       },
       "runtime" : {
@@ -26,17 +37,13 @@
          }
       }
    },
-   "provides" : {
-      "Win32::Readch" : {
-         "file" : "lib/Win32/Readch.pm",
-         "version" : "0.02"
-      }
-   },
    "release_status" : "stable",
    "resources" : {
-      "license" : [
-         "http://dev.perl.org/licenses/"
-      ]
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/klaus03/Win32-Readch.git",
+         "web" : "https://github.com/klaus03/Win32-Readch"
+      }
    },
-   "version" : "0.02"
+   "version" : "0.03"
 }

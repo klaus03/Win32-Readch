@@ -1,24 +1,25 @@
 ---
 abstract: 'Read individual characters from the keyboard using Win32::Console'
 author:
-  - unknown
-build_requires: {}
+  - 'Klaus Eichner <klaus03@gmail.com>'
+build_requires:
+  ExtUtils::MakeMaker: '0'
 configure_requires:
-  Module::Build: 0
+  ExtUtils::MakeMaker: '0'
 dynamic_config: 1
-generated_by: 'Module::Build version 0.3901, CPAN::Meta::Converter version 2.120630'
-license: perl
+generated_by: 'ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.141170'
+license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: Win32-Readch
-provides:
-  Win32::Readch:
-    file: lib/Win32/Readch.pm
-    version: 0.02
+no_index:
+  directory:
+    - t
+    - inc
 requires:
-  Win32::Console: 0
-  Win32::IPC: 0
+  Win32::Console: '0'
+  Win32::IPC: '0'
 resources:
-  license: http://dev.perl.org/licenses/
-version: 0.02
+  repository: https://github.com/klaus03/Win32-Readch.git
+version: '0.03'
