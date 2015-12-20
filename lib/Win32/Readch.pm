@@ -34,16 +34,13 @@ sub cpage {
     $cp =~ m{: \s* (\d+) \.? \s* \z}xms ? $1 : '0';
 }
 
-my @Ch_Stack;
-my $Ch_Acc;
-
 my $ZK_keybd = keybd;
 my $ZK_cpage = cpage;
 
-my %ZK_Shift;
-my %ZK_TList;
+my @Rc_Stack;
+my $Rc_Code_Acc;
 
-%ZK_Shift = (
+my %Tf_Shift = (
   29 => [ 'Ctrl' ],
   42 => [ 'Shift-Left' ],
   54 => [ 'Shift-Right' ],
@@ -56,21 +53,16 @@ my %ZK_TList;
   93 => [ 'Win-List' ],
 );
 
-#~ 224. 'à' => (\x{61}, \x{300})
-#~ 225. 'á' => (\x{61}, \x{301})
-#~ 226. 'â' => (\x{61}, \x{302})
-#~ 227. 'ã' => (\x{61}, \x{303})
-#~ 228. 'ä' => (\x{61}, \x{308})
-#~ 229. 'å' => (\x{61}, \x{30a})
+my %Tf_Code_List;
 
-for my $code (192..255) {
-    my $nfd = NFD(chr($code));
+for my $n_code (192..255) {
+    my $nfd = NFD(chr($n_code));
 
     if (length($nfd) == 2) {
         my $ch1 = substr($nfd, 0, 1);
         my $ch2 = substr($nfd, 1, 1);
 
-        my $astr =
+        my $a_code =
           $ch2 eq "\x{300}" ?  96 : # Accent Grave
           $ch2 eq "\x{301}" ? 180 : # Accent Aigue
           $ch2 eq "\x{302}" ?  94 : # Hat / Circonflex
@@ -79,16 +71,16 @@ for my $code (192..255) {
           $ch2 eq "\x{30a}" ? 186 : # Circle
           0;
 
-        $ZK_TList{$astr, $ch1} = $code;
+        $Tf_Code_List{$a_code, $ch1} = $n_code;
     }
 }
 
-my %ZK_Local;
-my %ZK_Accent;
-my %ZK_Letter;
+my %Tf_Code_Local;
+my %Tf_Code_Accent;
+my %Tf_Chr_Letter;
 
 if ($ZK_keybd eq '40c') { # French keyboard
-    %ZK_Local = (
+    %Tf_Code_Local = (
       ''  .$;.'41' => 178, # Power 2
       ''  .$;. '3' => 233, # e Accent Aigue
       ''  .$;. '8' => 232, # e Accent Grave
@@ -102,14 +94,14 @@ if ($ZK_keybd eq '40c') { # French keyboard
       'S' .$;.'53' => 167, # Paragraph
     );
 
-    %ZK_Accent = (
+    %Tf_Code_Accent = (
       ''  .$;.'26' =>  94, # Hat / Circonflex
       'S' .$;.'26' => 168, # Umlaut / Trema
       'CG'.$;. '8' =>  96, # Accent Grave
       'CG'.$;. '3' => 126, # Tilde
     );
 
-    %ZK_Letter = (
+    %Tf_Chr_Letter = (
       ''  .$;.'16' => 'a',
       'S' .$;.'16' => 'A',
       ''  .$;.'18' => 'e',
@@ -141,7 +133,7 @@ sub readch_noblock {
 
             $ev5 += 256 if $ev5 < 0;
 
-            next if $ZK_Shift{$ev4};
+            next if $Tf_Shift{$ev4};
 
             my $K_AltGr     = ($ev6 & (2 ** 0)) <=> 0;
             my $K_Alt       = ($ev6 & (2 ** 1)) <=> 0;
@@ -158,44 +150,42 @@ sub readch_noblock {
               ($K_Alt                      ? 'A' : '').
               ($K_AltGr                    ? 'G' : '');
 
-            my $acc = $ZK_Accent{$SKey, $ev4};
+            my $acc = $Tf_Code_Accent{$SKey, $ev4};
 
             if (defined $acc) {
-                $Ch_Acc = $acc;
+                $Rc_Code_Acc = $acc;
                 next;
             }
 
-            $ev5 ||= $ZK_Local{$SKey, $ev4} || 0;
-
-            printf "%-6s (%3d, %3d, %3d)%s\n", "[$SKey]", $ev4, $ev5, $ev6, (defined($Ch_Acc) ? " -> '$Ch_Acc'" : '');
+            $ev5 ||= $Tf_Code_Local{$SKey, $ev4} || 0;
 
             if ($ev5 == 0) {
-                if (defined $Ch_Acc) {
-                    my $letter = $ZK_Letter{$SKey, $ev4};
+                if (defined $Rc_Code_Acc) {
+                    my $letter = $Tf_Chr_Letter{$SKey, $ev4};
 
                     if (defined $letter) {
                         if ($letter eq ' ') {
-                            push @Ch_Stack, chr($Ch_Acc);
+                            push @Rc_Stack, chr($Rc_Code_Acc);
                         }
                         else {
-                            my $ncode = $ZK_TList{$Ch_Acc, $letter};
+                            my $p_code = $Tf_Code_List{$Rc_Code_Acc, $letter};
 
-                            if (defined $ncode) {
-                                push @Ch_Stack, chr($ncode);
+                            if (defined $p_code) {
+                                push @Rc_Stack, chr($p_code);
                             }
                         }
                     }
                 }
             }
             else {
-                push @Ch_Stack, chr($ev5);
+                push @Rc_Stack, chr($ev5);
             }
 
-            $Ch_Acc = undef;
+            $Rc_Code_Acc = undef;
         }
     }
 
-    shift @Ch_Stack;
+    shift @Rc_Stack;
 }
 
 sub readch_block {
