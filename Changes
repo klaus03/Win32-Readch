@@ -1,5 +1,11 @@
 Revision history for Win32::Readch
 
+0.06 - 2015-12-19T15:20:13+01:00
+
+  [ENHANCEMENTS]
+
+  - Allow Readch under chcp 65001 on a French or German keyboard 
+
 0.05 - 2014-12-28T11:30:55+01:00
 
   [BUG FIX]
