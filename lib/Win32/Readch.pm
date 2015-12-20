@@ -131,6 +131,8 @@ sub readch_noblock {
             my $ev5 = $event[5];
             my $ev6 = $event[6];
 
+            next if $ev4 == 0 and $ev5 == 0;
+
             $ev5 += 256 if $ev5 < 0;
 
             next if $Tf_Shift{$ev4};
@@ -152,12 +154,17 @@ sub readch_noblock {
 
             my $acc = $Tf_Code_Accent{$SKey, $ev4};
 
-            if (defined $acc) {
+            if (defined($acc) and not defined($Rc_Code_Acc)) {
                 $Rc_Code_Acc = $acc;
+
+                print "saving ca = $Rc_Code_Acc\n";
+
                 next;
             }
 
             $ev5 ||= $Tf_Code_Local{$SKey, $ev4} || 0;
+
+            print "ev4 = $ev4, ev5 = $ev5, ca = ", (defined($Rc_Code_Acc) ? "<$Rc_Code_Acc>" : 'undef'), "\n";
 
             if ($ev5 == 0) {
                 if (defined $Rc_Code_Acc) {
@@ -178,6 +185,10 @@ sub readch_noblock {
                 }
             }
             else {
+                if (defined($Rc_Code_Acc) and $Rc_Code_Acc > 127) {
+                    push @Rc_Stack, chr($Rc_Code_Acc);
+                }
+
                 push @Rc_Stack, chr($ev5);
             }
 
