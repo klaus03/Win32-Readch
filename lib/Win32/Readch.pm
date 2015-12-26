@@ -92,6 +92,7 @@ if ($ZK_keybd eq '40c') { # French keyboard
       'S' .$;.'27' => 163, # Pound symbol
       'S' .$;.'43' => 181, # Greek symbol
       'S' .$;.'53' => 167, # Paragraph
+      'S' .$;.'26' => 168, # Umlaut / Trema
     );
 
     %Tf_Code_Accent = (
@@ -191,7 +192,9 @@ sub readch_noblock {
                 push @Rc_Stack, chr($ev5);
             }
 
-            $Rc_Code_Acc = undef;
+            unless ($ev4 == 0) {
+                $Rc_Code_Acc = undef;
+            }
         }
     }
 
