@@ -231,6 +231,12 @@ sub readch_timeout {
 }
 
 sub getstr_echo {
+    my ($prompt) = @_;
+
+    local $| = 1;
+
+    print $prompt;
+
     chomp(my $txt = qx!set /p TXT=& perl -e "print \$ENV{'TXT'}"!);
     $txt;
 }
@@ -296,7 +302,7 @@ Win32::Readch - Read individual characters from the keyboard using Win32::Consol
 
     while (1) {
         my $ch2 = readch_timeout(990) // ''; # timeout in millisec
-        last $ch2 eq chr(27);
+        last if $ch2 eq chr(27);
         print '', ($ch2 eq '' ? '--- Press <Esc> to terminate...' : "*** '$ch2'"), "\n";
     }
 
