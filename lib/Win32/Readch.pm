@@ -11,15 +11,10 @@ use Win32::TieRegistry; $Registry->Delimiter('/');
 require Exporter;
 our @ISA       = qw(Exporter);
 our @EXPORT    = qw();
-our @EXPORT_OK = qw(readch_block readch_noblock getstr_noecho inpline keybd cpage);
+our @EXPORT_OK = qw(readch_block readch_noblock getstr_noecho getstr_echo keybd cpage);
 
 my $CONS_INP = Win32::Console->new(STD_INPUT_HANDLE)
   or die "Error in Win32::Readch - Can't Win32::Console->new(STD_INPUT_HANDLE)";
-
-sub inpline {
-    chomp(my $txt = qx!set /p TXT=& perl -e "print \$ENV{'TXT'}"!);
-    $txt;
-}
 
 sub keybd {
     my $kb = $Registry->{'HKEY_CURRENT_USER/Keyboard Layout/Preload//1'} // '';
@@ -222,6 +217,11 @@ sub readch_block {
     }
 
     return $ch;
+}
+
+sub getstr_echo {
+    chomp(my $txt = qx!set /p TXT=& perl -e "print \$ENV{'TXT'}"!);
+    $txt;
 }
 
 sub getstr_noecho {

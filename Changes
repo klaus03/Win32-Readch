@@ -1,5 +1,11 @@
 Revision history for Win32::Readch
 
+0.08 - 2016-01-09T13:41:12+01:00
+
+  [ENHANCEMENTS]
+
+  - Rename function inpline() into getstr_echo()
+
 0.07 - 2015-12-26T19:46:40+01:00
 
   [ENHANCEMENTS]
