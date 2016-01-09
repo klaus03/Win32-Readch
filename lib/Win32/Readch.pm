@@ -294,6 +294,12 @@ Win32::Readch - Read individual characters from the keyboard using Win32::Consol
     my $ch1 = readch_block;
     print "Character '$ch1' has been pressed\n\n";
 
+    while (1) {
+        my $ch2 = readch_timeout(990) // ''; # timeout in millisec
+        last $ch2 eq chr(27);
+        print '', ($ch2 eq '' ? '--- Press <Esc> to terminate...' : "*** '$ch2'"), "\n";
+    }
+
 =head1 DESCRIPTION
 
 This module goes to great length to make keyboard interaction happen in Windows under the
