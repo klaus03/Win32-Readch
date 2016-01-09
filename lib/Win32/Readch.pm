@@ -9,9 +9,13 @@ use Unicode::Normalize;
 use Win32::TieRegistry; $Registry->Delimiter('/');
 
 require Exporter;
-our @ISA       = qw(Exporter);
-our @EXPORT    = qw();
-our @EXPORT_OK = qw(readch_block readch_noblock getstr_noecho getstr_echo keybd cpage);
+our @ISA         = qw(Exporter);
+our %EXPORT_TAGS = ('all' => [qw(
+    readch_block readch_noblock readch_timeout
+    getstr_noecho getstr_echo keybd cpage
+)]);
+our @EXPORT      = qw();
+our @EXPORT_OK   = ( @{ $EXPORT_TAGS{'all'} } );
 
 my $CONS_INP = Win32::Console->new(STD_INPUT_HANDLE)
   or die "Error in Win32::Readch - Can't Win32::Console->new(STD_INPUT_HANDLE)";
@@ -219,6 +223,13 @@ sub readch_block {
     return $ch;
 }
 
+sub readch_timeout {
+    my ($millisec) = @_;
+
+    wait_any(@{[$CONS_INP]}, $millisec);
+    readch_noblock;
+}
+
 sub getstr_echo {
     chomp(my $txt = qx!set /p TXT=& perl -e "print \$ENV{'TXT'}"!);
     $txt;
@@ -269,16 +280,24 @@ Win32::Readch - Read individual characters from the keyboard using Win32::Consol
 
 =head1 SYNOPSIS
 
-    use Win32::Readch qw(readch_block getstr_noecho);
+    use Win32::Readch qw(:all);
 
-    local $| = 1;
-
-    print 'Press a single keystroke: ';
-    my $ch1 = readch_block;
-    print "Character '$ch1' has been pressed\n\n";
+    # works in Windows even with umlauts under chcp 65001 (Utf-8)
 
     my $password = getstr_noecho('Please enter a password: ');
     print "Your password is '$password'\n";
+
+    my $text = getstr_echo('Please enter a text: ');
+    print "Your text is '$text'\n";
+
+    print "Press a single keystroke\n";
+    my $ch1 = readch_block;
+    print "Character '$ch1' has been pressed\n\n";
+
+=head1 DESCRIPTION
+
+This module goes to great length to make keyboard interaction happen in Windows under the
+most adverse circumstances, for example typing in umlauts under chcp 65001 (Utf-8).
 
 =head1 AUTHOR
 
