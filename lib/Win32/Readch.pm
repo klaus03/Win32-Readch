@@ -209,19 +209,19 @@ sub _readkey {
                 next;
             }
 
-            my $arr = $Tf_Func{$ev4};
-
-            if ($arr) {
-                my ($d, $n) = @$arr;
-                $n += 12 if $d eq 'F' and $SKey eq 'S';
-
-                push @Rc_Stack, 400 + $n;
-                next;
-            }
-
             $ev5 ||= $Tf_Code_Local{$SKey, $ev4} || 0;
 
             if ($ev5 == 0) {
+                my $arr = $Tf_Func{$ev4};
+
+                if ($arr) {
+                    my ($d, $n) = @$arr;
+                    $n += 12 if $d eq 'F' and $SKey eq 'S';
+
+                    push @Rc_Stack, 400 + $n;
+                    next;
+                }
+
                 if (defined $Rc_Code_Acc) {
                     my $letter = $Tf_Chr_Letter{$SKey, $ev4};
 
