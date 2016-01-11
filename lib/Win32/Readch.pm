@@ -12,7 +12,7 @@ require Exporter;
 our @ISA         = qw(Exporter);
 our %EXPORT_TAGS = ('all' => [qw(
     readch_block readch_noblock readch_timeout
-    getstr_noecho getstr_echo keybd cpage
+    getstr_noecho getstr_echo keybd cpage funckey
 )]);
 our @EXPORT      = qw();
 our @EXPORT_OK   = ( @{ $EXPORT_TAGS{'all'} } );
@@ -35,6 +35,9 @@ sub cpage {
 
 my $ZK_keybd = keybd;
 my $ZK_cpage = cpage;
+my $ZK_FuncKey = '';
+
+sub funckey { $ZK_FuncKey }
 
 my @Rc_Stack;
 my $Rc_Code_Acc;
@@ -51,6 +54,47 @@ my %Tf_Shift = (
   92 => [ 'Win-Right' ],
   93 => [ 'Win-List' ],
 );
+
+my %Tf_Func = (
+  59 => [ 'F',          1 ],
+  60 => [ 'F',          2 ],
+  61 => [ 'F',          3 ],
+  62 => [ 'F',          4 ],
+  63 => [ 'F',          5 ],
+  64 => [ 'F',          6 ],
+  65 => [ 'F',          7 ],
+  66 => [ 'F',          8 ],
+  67 => [ 'F',          9 ],
+  68 => [ 'F',         10 ],
+  87 => [ 'F',         11 ],
+  88 => [ 'F',         12 ],
+  71 => [ 'Home',      25 ],
+  72 => [ 'Arr-Up',    26 ],
+  73 => [ 'Pg-Up',     27 ],
+  75 => [ 'Arr-Left',  28 ],
+  77 => [ 'Arr-Right', 29 ],
+  79 => [ 'End',       30 ],
+  80 => [ 'Arr-Down',  31 ],
+  81 => [ 'Pg-Down',   32 ],
+  82 => [ 'Ins',       33 ],
+  83 => [ 'Del',       34 ],
+);
+
+my %Tf_FRev;
+
+for (keys %Tf_Func) {
+    my ($d, $n1) = @{$Tf_Func{$_}};
+
+    if ($d eq 'F') {
+        my $n2 = $n1 + 12;
+
+        $Tf_FRev{$n1} = 'F'.$n1;
+        $Tf_FRev{$n2} = 'F'.$n2;
+    }
+    else {
+        $Tf_FRev{$n1} = $d;
+    }
+}
 
 my %Tf_Code_List;
 
@@ -120,7 +164,7 @@ if ($ZK_keybd eq '40c') { # French keyboard
     );
 }
 
-sub readch_noblock {
+sub _readkey {
     while ($CONS_INP->GetEvents) {
         my @event = $CONS_INP->Input;
 
@@ -134,7 +178,7 @@ sub readch_noblock {
             $ev5 += 256 if $ev5 < 0;
 
             unless ($ZK_cpage eq '65001') {
-                push @Rc_Stack, chr($ev5) unless $ev5 == 0;
+                push @Rc_Stack, $ev5 unless $ev5 == 0;
                 next;
             }
 
@@ -156,10 +200,22 @@ sub readch_noblock {
               ($K_Alt                      ? 'A' : '').
               ($K_AltGr                    ? 'G' : '');
 
+            #~ printf "Key: %-6s => %3d\n", "[$SKey]", $ev4;
+
             my $acc = $Tf_Code_Accent{$SKey, $ev4};
 
             if (defined($acc) and not defined($Rc_Code_Acc)) {
                 $Rc_Code_Acc = $acc;
+                next;
+            }
+
+            my $arr = $Tf_Func{$ev4};
+
+            if ($arr) {
+                my ($d, $n) = @$arr;
+                $n += 12 if $d eq 'F' and $SKey eq 'S';
+
+                push @Rc_Stack, 400 + $n;
                 next;
             }
 
@@ -171,13 +227,13 @@ sub readch_noblock {
 
                     if (defined $letter) {
                         if ($letter eq ' ') {
-                            push @Rc_Stack, chr($Rc_Code_Acc);
+                            push @Rc_Stack, $Rc_Code_Acc;
                         }
                         else {
                             my $p_code = $Tf_Code_List{$Rc_Code_Acc, $letter};
 
                             if (defined $p_code) {
-                                push @Rc_Stack, chr($p_code);
+                                push @Rc_Stack, $p_code;
                             }
                         }
                     }
@@ -185,10 +241,10 @@ sub readch_noblock {
             }
             else {
                 if (defined($Rc_Code_Acc) and $Rc_Code_Acc > 127) {
-                    push @Rc_Stack, chr($Rc_Code_Acc);
+                    push @Rc_Stack, $Rc_Code_Acc;
                 }
 
-                push @Rc_Stack, chr($ev5);
+                push @Rc_Stack, $ev5;
             }
 
             unless ($ev4 == 0) {
@@ -198,6 +254,20 @@ sub readch_noblock {
     }
 
     shift @Rc_Stack;
+}
+
+sub readch_noblock {
+    $ZK_FuncKey = '';
+
+    my $rk = _readkey;
+    return unless defined $rk;
+    return chr($rk) if $rk <= 255;
+
+    my $d = $Tf_FRev{$rk - 400};
+    return unless defined $d;
+
+    $ZK_FuncKey = $d;
+    return "\x{01}";
 }
 
 sub readch_block {
