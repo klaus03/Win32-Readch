@@ -1,5 +1,11 @@
 Revision history for Win32::Readch
 
+0.09 - 2016-01-11T20:48:33+01:00
+
+  [ENHANCEMENTS]
+
+  - Optionally accept function keys
+
 0.08 - 2016-01-09T13:41:12+01:00
 
   [ENHANCEMENTS]
