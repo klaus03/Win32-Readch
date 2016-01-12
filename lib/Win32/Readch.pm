@@ -175,16 +175,6 @@ sub _readkey {
             my $ev5 = $event[5];
             my $ev6 = $event[6];
 
-            $ev5 += 256 if $ev5 < 0;
-
-            unless ($ZK_cpage eq '65001') {
-                push @Rc_Stack, $ev5 unless $ev5 == 0;
-                next;
-            }
-
-            next if $ev4 == 0 and $ev5 == 0;
-            next if $Tf_Shift{$ev4};
-
             my $K_AltGr     = ($ev6 & (2 ** 0)) <=> 0;
             my $K_Alt       = ($ev6 & (2 ** 1)) <=> 0;
             my $K_CtlRight  = ($ev6 & (2 ** 2)) <=> 0;
@@ -200,16 +190,7 @@ sub _readkey {
               ($K_Alt                      ? 'A' : '').
               ($K_AltGr                    ? 'G' : '');
 
-            #~ printf "Key: %-6s => %3d\n", "[$SKey]", $ev4;
-
-            my $acc = $Tf_Code_Accent{$SKey, $ev4};
-
-            if (defined($acc) and not defined($Rc_Code_Acc)) {
-                $Rc_Code_Acc = $acc;
-                next;
-            }
-
-            $ev5 ||= $Tf_Code_Local{$SKey, $ev4} || 0;
+            $ev5 += 256 if $ev5 < 0;
 
             if ($ev5 == 0) {
                 my $arr = $Tf_Func{$ev4};
@@ -221,7 +202,26 @@ sub _readkey {
                     push @Rc_Stack, 400 + $n;
                     next;
                 }
+            }
 
+            unless ($ZK_cpage eq '65001') {
+                push @Rc_Stack, $ev5 unless $ev5 == 0;
+                next;
+            }
+
+            next if $ev4 == 0 and $ev5 == 0;
+            next if $Tf_Shift{$ev4};
+
+            my $acc = $Tf_Code_Accent{$SKey, $ev4};
+
+            if (defined($acc) and not defined($Rc_Code_Acc)) {
+                $Rc_Code_Acc = $acc;
+                next;
+            }
+
+            $ev5 ||= $Tf_Code_Local{$SKey, $ev4} || 0;
+
+            if ($ev5 == 0) {
                 if (defined $Rc_Code_Acc) {
                     my $letter = $Tf_Chr_Letter{$SKey, $ev4};
 
